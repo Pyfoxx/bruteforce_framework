@@ -10,7 +10,7 @@ global parser, base_dict
 parser = argparse.ArgumentParser()
 base_dict = Path('/usr/share/wordlists/rockyou.txt').resolve()
 
-# Can't be bothered to much for commentarys, used jetbrains AI, seems okay for most part This script is used as the
+# Can't be bothered to much for comments, used jetbrains AI, seems okay for most part This script is used as the
 # main module for bruteforce, and is used to call any hash methode with any bruteforce mode you need. The hash module
 # need a function defined by `def hash(password):`
 
