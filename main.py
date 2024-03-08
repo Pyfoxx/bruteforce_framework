@@ -112,25 +112,6 @@ def arg_parse():
 
 
 @timeit
-def dict_single_silent():
-    """
-    Find a line in the dictionary file that matches the specified hash.
-    Silent mode
-
-    :return: The matching line if found, otherwise return False.
-    """
-    with open(flags.dictionary, 'r', encoding='ISO-8859-1') as d:
-        for line in d:
-            line = line.split('\n')[0]
-            hash_line = hash_module.hash(line)
-            if hash_line == flags.hash:
-                d.close()
-                return line
-        d.close()
-        return False
-
-
-@timeit
 def dict_single_verbose():
     """
     Perform a verbose search in the dictionary file to find a line with a matching hash.
@@ -168,38 +149,17 @@ def dict_file_verbose(target):
         return False
 
 
-@timeit
-def dict_file_silent(target):
-    """
-    Searches for a target hash in a dictionary file.
-
-    :param target: The hash to search for.
-    :return: The line from the dictionary file that matches the hash, or False if no match is found.
-    """
-    with open(flags.dictionary, 'r', encoding='ISO-8859-1') as d:
-        for line in d:
-            line = line.split('\n')[0]
-            hash_line = hash_module.hash(line)
-            if hash_line == target:
-                d.close()
-                return line
-        d.close()
-        return False
-
 
 def dict_single():
     """
     :return: None
     """
-    if flags.verbose:
-        brute_result = dict_single_verbose()
-    else:
-        brute_result = dict_single_silent()
+    brute_result = dict_single_verbose()
     if not brute_result[0]:
-        print(
+        vprint(
             f"The hash `{Colors.FAIL}{flags.hash}{Colors.ENDC}` cound not be broken with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
     else:
-        print(
+        vprint(
             f"the hash : \'{Colors.FAIL}{flags.hash}{Colors.ENDC}\' has been matched to : \'{Colors.OKGREEN}{brute_result[0]}{Colors.ENDC}\' in {Colors.OKBLUE}{brute_result[1]}{Colors.ENDC} seconds with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
 
 
@@ -210,27 +170,16 @@ def dict_file():
     :return: None
     """
     with open(flags.file, 'r') as t:
-        if flags.verbose:
-            for target in t:
-                target = target.split('\n')[0]
-                brute_result = dict_file_verbose(target)
-                if not brute_result[0]:
-                    print(
-                        f"The hash `{Colors.FAIL}{flags.hash}{Colors.ENDC}` cound not be broken with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
-                else:
-                    print(
-                        f"the hash : \'{Colors.FAIL}{flags.hash}{Colors.ENDC}\' has been matched to : \'{Colors.OKGREEN}{brute_result[0]}{Colors.ENDC}\' in {Colors.OKBLUE}{brute_result[1]}{Colors.ENDC} seconds with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
-        else:
-            for target in t:
-                target = target.split('\n')[0]
-                brute_result = dict_file_silent(target)
-                if not brute_result[0]:
-                    print(
-                        f"The hash `{Colors.FAIL}{flags.hash}{Colors.ENDC}` cound not be broken with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
-                else:
-                    print(
-                        f"the hash : \'{Colors.FAIL}{flags.hash}{Colors.ENDC}\' has been matched to : \'{Colors.OKGREEN}{brute_result[0]}{Colors.ENDC}\' in {Colors.OKBLUE}{brute_result[1]}{Colors.ENDC} seconds with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
-        t.close()
+        for target in t:
+            target = target.split('\n')[0]
+            brute_result = dict_file_verbose(target)
+            if not brute_result[0]:
+                vprint(
+                    f"The hash `{Colors.FAIL}{flags.hash}{Colors.ENDC}` cound not be broken with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
+            else:
+                vprint(
+                    f"the hash : \'{Colors.FAIL}{flags.hash}{Colors.ENDC}\' has been matched to : \'{Colors.OKGREEN}{brute_result[0]}{Colors.ENDC}\' in {Colors.OKBLUE}{brute_result[1]}{Colors.ENDC} seconds with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
+            t.close()
 
 
 @timeit
@@ -255,41 +204,13 @@ def table_mode_verbose():
         for target in t:
             target = target.split('\n')[0]
             if target in hash_keys:
-                print(
+                vprint(
                     f"The hash : \'{Colors.FAIL}{target}{Colors.ENDC}\' has been matched to : \'{Colors.OKGREEN}{hash_table[target]}{Colors.ENDC}\' with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
             else:
-                print(
+                vprint(
                     f"The hash : `{Colors.FAIL}{target}{Colors.ENDC}` cound not be broken with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
         t.close()
 
-
-@timeit
-def table_mode_silent():
-    """
-    Construct a hash table from a dictionary file and compare passwords from a target file.
-
-    :return: None
-    """
-    print("constructing table")
-    hash_table = {}
-    with open(flags.dictionary, 'r', encoding='ISO-8859-1') as d:
-        for passwd in d:
-            passwd = passwd.split('\n')[0]
-            hashd = hash_module.hash(passwd)
-            hash_table[hashd] = passwd
-        d.close()
-    print("table successfully constructed, checking password now\n\n\n")
-    hash_keys = list(hash_table.keys())
-    with open(flags.file, 'r', encoding='ISO-8859-1') as t:
-        for target in t:
-            target = target.split('\n')[0]
-            if target in hash_keys:
-                print(
-                    f"The hash : \'{Colors.FAIL}{target}{Colors.ENDC}\' has been matched to : \'{Colors.OKGREEN}{hash_table[target]}{Colors.ENDC}\' with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
-            else:
-                print(
-                    f"The hash : \`{Colors.FAIL}{target}{Colors.ENDC}\` cound not be broken with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
-        t.close()
 
 
 def table_mode():
@@ -299,10 +220,7 @@ def table_mode():
     :return: None
 
     """
-    if flags.verbose:
-        print(table_mode_verbose())
-    else:
-        print(table_mode_silent())
+    print(table_mode_verbose())
 
 
 def brut_single():
@@ -311,41 +229,14 @@ def brut_single():
 
     :return: None
     """
-    if flags.verbose:
-        brute_result = brut_single_verbose()
-    else:
-        brute_result = brut_single_silent()
+    brute_result = brut_single_verbose()
     if not brute_result[0]:
-        print(
+        vprint(
             f"The hash `{Colors.FAIL}{flags.hash}{Colors.ENDC}` cound not be broken with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
     else:
-        print(
+        vprint(
             f"the hash : \'{Colors.FAIL}{flags.hash}{Colors.ENDC}\' has been matched to : \'{Colors.OKGREEN}{brute_result[0][0]}{Colors.ENDC}\' in {Colors.OKBLUE}{brute_result[1]}{Colors.ENDC} seconds with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`, took `{Colors.OKCYAN}{brute_result[0][1]}{Colors.ENDC}` iterations")
 
-
-@timeit
-def brut_single_silent():
-    """
-    Perform a brute force search to find a string that matches the given hash.
-
-    :return: A tuple containing the found string and the number of iterations performed, or False if no match was found.
-    """
-    char = ''
-    if 'alpha' in flags.character_type:
-        char = char + string.ascii_letters
-    if 'numerical' in flags.character_type:
-        char = char + string.digits
-    if 'special' in flags.character_type:
-        char = char + string.punctuation
-    count = 0
-    for i in range(flags.min, flags.max):
-        gen = product(char, repeat=i)
-        for test in gen:
-            count += 1
-            test_hash = hash_module.hash(''.join(test))
-            if test_hash == flags.hash:
-                return ''.join(test), count
-    return False
 
 
 @timeit
@@ -381,26 +272,6 @@ def brut_single_verbose():
             test_hash = hash_module.hash(''.join(test))
             print(f'#{count} : {"".join(test)} : {test_hash}')
             if test_hash == flags.hash:
-                return ''.join(test), count
-    return False
-
-
-@timeit
-def brut_file_silent(target, char):
-    """
-    Perform a brute-force search to find a string that matches the target hash.
-
-    :param target: The hash value to find a match for.
-    :param char: The characters to be used for generating the string.
-    :return: A tuple containing the matching string and the number of attempts made, or False if no match is found.
-    """
-    count = 0
-    for i in range(flags.min, flags.max):
-        gen = product(char, repeat=i)
-        for test in gen:
-            count += 1
-            test_hash = hash_module.hash(''.join(test))
-            if test_hash == target:
                 return ''.join(test), count
     return False
 
@@ -447,53 +318,40 @@ def brut_file():
     :return: None
     """
     with open(flags.file, 'r') as t:
-        if flags.verbose:
-            char = ''
-            if 'alpha' in flags.character_type:
-                print('adding alpha')
-                char = char + string.ascii_letters
-            if 'numerical' in flags.character_type:
-                print('adding  numerical')
-                char = char + string.digits
-            if 'special' in flags.character_type:
-                print('adding specials')
-                char = char + string.punctuation
-            print(f'will atack with:\n{char}')
-            for target in t:
-                target = target.split('\n')[0]
-                brute_result = brut_file_silent(target, char)
-                if not brute_result[0]:
-                    print(
-                        f"The hash `{Colors.FAIL}{flags.hash}{Colors.ENDC}` cound not be broken with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
-                else:
-                    print(
-                        f"the hash : \'{Colors.FAIL}{flags.hash}{Colors.ENDC}\' has been matched to : \'{Colors.OKGREEN}{brute_result[0][0]}{Colors.ENDC}\' in {Colors.OKBLUE}{brute_result[1]}{Colors.ENDC} seconds with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`, took `{Colors.OKCYAN}{brute_result[0][1]}{Colors.ENDC}` iterations")
-        else:
-            char = ''
-            if 'alpha' in flags.character_type:
-                char = char + string.ascii_letters
-            if 'numerical' in flags.character_type:
-                char = char + string.digits
-            if 'special' in flags.character_type:
-                char = char + string.punctuation
-            for target in t:
-                target = target.split('\n')[0]
-                brute_result = brut_file_silent(target, char)
-                if not brute_result[0]:
-                    print(
-                        f"The hash `{Colors.FAIL}{flags.hash}{Colors.ENDC}` cound not be broken with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
-                else:
-                    print(
-                        f"the hash : \'{Colors.FAIL}{flags.hash}{Colors.ENDC}\' has been matched to : \'{Colors.OKGREEN}{brute_result[0]}{Colors.ENDC}\' in {Colors.OKBLUE}{brute_result[1]}{Colors.ENDC} with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
-        t.close()
+        char = ''
+        if 'alpha' in flags.character_type:
+            print('adding alpha')
+            char = char + string.ascii_letters
+        if 'numerical' in flags.character_type:
+            print('adding  numerical')
+            char = char + string.digits
+        if 'special' in flags.character_type:
+            print('adding specials')
+            char = char + string.punctuation
+        print(f'will atack with:\n{char}')
+        for target in t:
+            target = target.split('\n')[0]
+            brute_result = brut_file_verbose(target, char)
+            if not brute_result[0]:
+                vprint(
+                    f"The hash `{Colors.FAIL}{flags.hash}{Colors.ENDC}` cound not be broken with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`")
+            else:
+                vprint(
+                    f"the hash : \'{Colors.FAIL}{flags.hash}{Colors.ENDC}\' has been matched to : \'{Colors.OKGREEN}{brute_result[0][0]}{Colors.ENDC}\' in {Colors.OKBLUE}{brute_result[1]}{Colors.ENDC} seconds with the algorythm being : `{Colors.OKCYAN}{flags.type}{Colors.ENDC}`, took `{Colors.OKCYAN}{brute_result[0][1]}{Colors.ENDC}` iterations")
+            t.close()
 
 
 def func_selector():
+    global vprint
     """
     Selects and executes the appropriate function based on the attack mode and script mode.
 
     :return: None
     """
+    vprint = print
+    if flags.verbose:
+        def print(*args, **kwargs):
+            pass
     match flags.attack_mode:
         case 'dict':
             match flags.script_mode:
