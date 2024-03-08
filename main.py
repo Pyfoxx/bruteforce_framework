@@ -74,6 +74,7 @@ def arg_set():
     :return: None
     """
     parser.add_argument('-T', "--type", help="The type of the hashes")
+    parser.add_argument('-S', "--slaves", help="in case of slaving") # Work in progress
     parser.add_argument('-s', "--script_mode", help="type of target", choices=['single', 'file', 'hash_table'],
                         default='single')
     parser.add_argument('-b', '--hash', help="The hash to break")
@@ -352,6 +353,8 @@ def func_selector():
     if flags.verbose:
         def print(*args, **kwargs):
             pass
+    if flags.slaves:
+        slaves_list = flags.slaves.split(";")
     match flags.attack_mode:
         case 'dict':
             match flags.script_mode:
