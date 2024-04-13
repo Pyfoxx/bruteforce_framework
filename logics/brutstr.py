@@ -1,6 +1,6 @@
 import string
 from itertools import product
-def brut_single_verbose(hash_module, target, flags, end, *args, **kwargs):
+def main(hash_module, target, flags, end, *args, **kwargs):
     """
     Perform a brute force attack with verbose output.
 

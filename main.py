@@ -76,11 +76,11 @@ def arg_set():
     Called in the initialisation stack of the script
     :return: None
     """
-    hash_choices = i = [x for x in os.listdir(f'{hash_path}') if os.path.isfile(f'{hash_path}{x}') and '.py' in x]
-    hash_choices.pop(hash_choices.index("__init__.py"))
+    hash_choices = i = [x.replace('.py', '') for x in os.listdir(f'{hash_path}') if os.path.isfile(f'{hash_path}{x}') and '.py' in x]
+    if "__init__.py" in hash_choices : hash_choices.pop(hash_choices.index("__init__.py"))
     parser.add_argument('-T', "--type", help="The type of the hashes", choices=hash_choices)
-    atack_choices = i = [x for x in os.listdir(f'{logics_path}') if os.path.isfile(f'{logics_path}{x}') and '.py' in x]
-    atack_choices.pop(atack_choices.index("__init__.py"))
+    atack_choices = i = [x.replace('.py', '') for x in os.listdir(f'{logics_path}') if os.path.isfile(f'{logics_path}{x}') and '.py' in x]
+    if "__init__.py" in atack_choices: atack_choices.pop(atack_choices.index("__init__.py"))
     parser.add_argument('-a', "--attack_mode", help="Mode of attack", choices=atack_choices, default='dict')
     parser.add_argument('-b', '--hash', help="The hash to break")
     parser.add_argument('-S', "--slaves", help="in case of slaving")
@@ -121,9 +121,11 @@ def arg_parse():
 
 def end(*args, **kwargs):
     if len(args) == 1:
-        return args[0]
+        print(args[0])
+        exit(0)
     else:
-        return args
+        print(args)
+        exit(0)
 
 
 def func_selector():
@@ -135,14 +137,15 @@ def func_selector():
     if flags.slaves:
         slaves_list = flags.slaves.split(";")
         import flask
+        return None
         # TODO : make slaves go brrrrrr
         # TODO : adjust logic so the slaves are ok
         # TODO : ask slaves first their power level so the work is distributed by it
     else:
-        logic = __import__(f'logics.{flags.atack_mode}', fromlist=[flags.atack_mode])
-        hash = __import__(f'hashs.{flags.hash}', fromlist=[flags.hash])
+        logic = __import__(f'logics.{flags.attack_mode}', fromlist=[flags.attack_mode])
+        hash = __import__(f'hash.{flags.type}', fromlist=[flags.type])
         # hash_module, target, flags, end, *args, **kwargs
-        logic.main(hash_module=hash, target=flags.hash, flags=flags, end=end)
+        print(logic.main(hash_module=hash, target=flags.hash, flags=flags, end=end))
 
 
 

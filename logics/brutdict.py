@@ -4,15 +4,15 @@ def main(hash_module, target, flags, end, *args, **kwargs):
 
     :return: The line from the dictionary file if a matching hash is found, else False.
     """
-    with open(flags.dictionary, 'r', encoding='ISO-8859-1') as d:
-        for line in d:
-            line = line.split('\n')[0]
-            hash_line = hash_module.hash(line)
-            if hash_line == target:
-                d.close()
-                end(line)
-        d.close()
-        end(False)
+    d = open(flags.dictionary, 'r', encoding='ISO-8859-1')
+    for line in d:
+        line = line.split('\n')[0]
+        hash_line = hash_module.hash(line)
+        if hash_line == target:
+            d.close()
+            end(line)
+    d.close()
+    end(False)
 
 
 if __name__ == "__main__":
