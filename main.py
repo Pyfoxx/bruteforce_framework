@@ -142,7 +142,7 @@ def func_selector():
         logic = __import__(f'logics.{flags.atack_mode}', fromlist=[flags.atack_mode])
         hash = __import__(f'hashs.{flags.hash}', fromlist=[flags.hash])
         # hash_module, target, flags, end, *args, **kwargs
-        logic(hash_module=hash, target=flags.hash, flags=flags, end=end)
+        logic.main(hash_module=hash, target=flags.hash, flags=flags, end=end)
 
 
 
